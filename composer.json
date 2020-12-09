@@ -1,6 +1,7 @@
 {
     "name": "mamad/appli",
     "type": "project",
+    "description": "Tiens la voila ta description !!",
     "license": "GNU",
     "authors": [
         {
@@ -8,6 +9,11 @@
             "email": "majjad.younes670@gmail.com"
         }
     ],
-    "require": {
+    "require": {},
+
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
     }
 }
