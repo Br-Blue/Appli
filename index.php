@@ -1,6 +1,10 @@
 <?php
+    require "vendor/autoload.php";
+
     session_start();    
-    require_once "MessageService.php";//j'intègre le code présent dans MessageService.php ici
+    
+    use App\Manager\ProductManager;
+    $manager = new ProductManager();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -9,33 +13,36 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="preconnect" href="https://fonts.gstatic.com">
         <link href="https://fonts.googleapis.com/css2?family=Oxygen&display=swap" rel="stylesheet">
-        <link rel="stylesheet" href="style.css">
-        <title>Ajout produit</title>
+        <link rel="stylesheet" href="public/css/style.css">
+        <title>Boutique</title>
     </head>
     <body>
         <?php 
             include "menu.php";
             include "messages.php";
         ?>
-
-        <form action="traitement.php?action=add" method="post">
-            <h1>Ajouter un produit</h1>
-            <p>
-                <label>Nom du produit&nbsp;: </label>
-                <input type="text" name="name">
-            </p>
-            <p>
-                <label>Prix du produit&nbsp;: </label>
-                <input type="number" step="any" name="price">
-            </p>
-            <p>
-                <label>Quantité désirée&nbsp;:  </label>
-                <input type="number" name="qtt" value="1">
-            </p>
-            <p class="submit-row">
-                <input type="submit" name="submit" value="Ajouter le produit">
-            </p>
-        </form>
+        <!-- afficher la liste de tous les produits en base (en utilisant 
+        $manager->getAll()
+        et permettre via un simple lien de le mettre dans le panier
+        <a href="traitement.php?action=incart&id=?">Ajouter au panier</a>
+        ou ? est égal à l'id du produit dans la bdd -->
+        <h1>Liste des produits</h1>
+        <section id="products-list">
+        <?php
+            $products = $manager->getAll();
+            foreach($products as $prod){
+                echo "<article class='product-item'>",
+                        "<h3>", $prod->getName(), "</h3>",
+                        "<p>", $prod->getPrice(true), "&nbsp;€</p>",
+                        "<p>", 
+                            "<a href='traitement.php?action=incart&id=",
+                                $prod->getId(),
+                            "'>Ajouter au panier</a>",
+                        "</p>",
+                    "</article>";
+            }
+        ?>
+        </section>
         
     </body>
 </html>

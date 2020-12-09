@@ -1,0 +1,13 @@
+{
+    "name": "mamad/appli",
+    "type": "project",
+    "license": "GNU",
+    "authors": [
+        {
+            "name": "Br-Blue",
+            "email": "majjad.younes670@gmail.com"
+        }
+    ],
+    "require": {
+    }
+}

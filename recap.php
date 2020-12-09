@@ -1,4 +1,5 @@
 <?php
+    require_once "Product.php";
     session_start();
     require_once "MessageService.php";
 ?>
@@ -9,7 +10,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="preconnect" href="https://fonts.gstatic.com">
         <link href="https://fonts.googleapis.com/css2?family=Oxygen&display=swap" rel="stylesheet">
-        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="public/css/style.css">
         <title>Récapitulatif des produits</title>
     </head>
     <body>
@@ -19,7 +20,7 @@
         ?>
 
         <?php
-            if(!isset($_SESSION['products']) || empty($_SESSION['products'])){
+            if(!isset($_SESSION['cart']) || empty($_SESSION['cart'])){
                 echo "<p>Aucun produit en session...</p>";
             }
             else{
@@ -35,15 +36,16 @@
                         "</thead>",
                         "<tbody>";
                 $totalGeneral = 0;
-                foreach($_SESSION['products'] as $index => $product){
+                foreach($_SESSION['cart'] as $index => $order){
+                    //$order[Product, 'qtt', 'total']
                     echo "<tr>",
                             "<td class='text-center'><a href='traitement.php?action=delete&index=$index'>&times;</a></td>",
-                            "<td>".$product['name']."</td>",
-                            "<td class='text-right'>".number_format($product['price'], 2, ",", "&nbsp;")."&nbsp;€</td>",
-                            "<td class='text-center'>".$product['qtt']."</td>",
-                            "<td class='text-right'>".number_format($product['total'], 2, ",", "&nbsp;")."&nbsp;€</td>",
+                            "<td>".$order['product']->getName()."</td>",
+                            "<td class='text-right'>".$order['product']->getPrice(true)."&nbsp;€</td>",
+                            "<td class='text-center'>".$order['qtt']."</td>",
+                            "<td class='text-right'>".$order['total']."&nbsp;€</td>",
                         "</tr>";
-                    $totalGeneral+= $product['total'];
+                    $totalGeneral+= $order['total'];
                 }
                 echo "<tr>",
                         "<td colspan=4>Total général : </td>",

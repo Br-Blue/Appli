@@ -21,6 +21,17 @@ html, body{
     color: green;
 }
 
+#products-list{
+    display: flex;
+    flex-wrap: wrap;
+}
+.product-item{
+    min-width: 200px;
+    padding: 1em;
+    margin: 1em;
+    border: 1px solid #ccc;
+}
+
 form{
 
     max-width: 500px;

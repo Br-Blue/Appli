@@ -1,28 +1,48 @@
 <?php
+    require_once "vendor/autoload.php";
+
+    use App\Service\ProductManager;
+    use App\Service\MessageService;
+
     session_start();
-    require_once "MessageService.php";
+    $manager = new ProductManager(); 
 
     if(isset($_GET['action'])){
 
         switch($_GET['action']){
+            //ajout d'un produit choisi en session (dans le panier)
+            case "incart": 
+                //on récupère le bon produit dans la base de données
+                $product = $manager->getOneById($_GET['id']);
+                //on créé une ligne de panier avec : 
+                // - le produit complet
+                // - la quantité à 1 (pour l'instant)
+                // - et un total égal au prix du produit vu que la quantité est à 1
+                $order = [
+                    "product"  => $product,
+                    "qtt"      => 1,
+                    "total"    => $product->getPrice()
+                ];
+                //on insère la ligne panier dans le panier en session
+                $_SESSION['cart'][] = $order; 
+                //un petit message de succès avec un lien pour aller au panier
+                MessageService::setMessage("success", 
+                    "Produit ajouté au panier - <a href='recap.php'>Voir mon panier</a>"
+                );
+                //on redirige vers la liste des produits
+                header("Location:index.php");
+                die;
             //ajout de produit
             case "add": 
                 if(isset($_POST['submit'])){
 
                     $name = filter_input(INPUT_POST, "name", FILTER_SANITIZE_STRING);
                     $price = filter_input(INPUT_POST, "price", FILTER_VALIDATE_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
-                    $qtt = filter_input(INPUT_POST, "qtt", FILTER_VALIDATE_INT);
-            
-                    if($name && $price && $qtt){
+                    
+                    if($name && $price){
                         
-                        $product = [
-                            "name"  => $name,
-                            "price" => $price,
-                            "qtt"   => $qtt,
-                            "total" => $price*$qtt
-                        ];
-                        MessageService::setMessage("success", "Produit ajouté avec succès !!");
-                        $_SESSION['products'][] = $product;
+                        $manager->insert($name, $price);    //ajout en base de données
+                        MessageService::setMessage("success", "Produit ajouté avec succès !!");                        
                     }
                     else MessageService::setMessage("error", "Formulaire mal rempli, réessayez !");
                 }
@@ -32,9 +52,9 @@
 
             //supprimer un produit avec son index
             case "delete":
-                if(isset($_SESSION['products'][$_GET['index']])){
+                if(isset($_SESSION['cart'][$_GET['index']])){
                     $indexProduit = $_GET['index'];
-                    unset($_SESSION['products'][$indexProduit]);
+                    unset($_SESSION['cart'][$indexProduit]);
                     MessageService::setMessage("success", "Produit supprimé avec succès !!");
                 }
                 else MessageService::setMessage("error", "Le produit demandé n'existe pas...");
@@ -42,11 +62,18 @@
 
             //vider la session
             case "clear": 
-                if(!empty($_SESSION['products'])){
-                    unset($_SESSION['products']);
+                if(!empty($_SESSION['cart'])){
+                    unset($_SESSION['cart']);
                     MessageService::setMessage("success", "Liste des produits effacée !!");
                 }
                 break;
+
+            //supprimer un produit en base de données
+            case "suppr": 
+                $manager->delete($_GET['id']);
+                MessageService::setMessage("success", "Produit supprimé avec succès !");
+                header("Location:form.php");
+                die;
                 
         }//fin du switch
         //dans le cas où l'action n'a redirigé nulle part
