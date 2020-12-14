@@ -1,48 +1,15 @@
 <?php
+    //CECI EST LE FRONT CONTROLLER !
+    //C'est le seul fichier de dialogue avec l'utilisateur
     require "vendor/autoload.php";
 
+    use App\Service\RouterService;
+
     session_start();    
-    
-    use App\Manager\ProductManager;
-    $manager = new ProductManager();
-?>
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="preconnect" href="https://fonts.gstatic.com">
-        <link href="https://fonts.googleapis.com/css2?family=Oxygen&display=swap" rel="stylesheet">
-        <link rel="stylesheet" href="public/css/style.css">
-        <title>Boutique</title>
-    </head>
-    <body>
-        <?php 
-            include "menu.php";
-            include "messages.php";
-        ?>
-        <!-- afficher la liste de tous les produits en base (en utilisant 
-        $manager->getAll()
-        et permettre via un simple lien de le mettre dans le panier
-        <a href="traitement.php?action=incart&id=?">Ajouter au panier</a>
-        ou ? est égal à l'id du produit dans la bdd -->
-        <h1>Liste des produits</h1>
-        <section id="products-list">
-        <?php
-            $products = $manager->getAll();
-            foreach($products as $prod){
-                echo "<article class='product-item'>",
-                        "<h3>", $prod->getName(), "</h3>",
-                        "<p>", $prod->getPrice(true), "&nbsp;€</p>",
-                        "<p>", 
-                            "<a href='traitement.php?action=incart&id=",
-                                $prod->getId(),
-                            "'>Ajouter au panier</a>",
-                        "</p>",
-                    "</article>";
-            }
-        ?>
-        </section>
-        
-    </body>
-</html>
+    /**
+     * $response est le retour du contrôleur nécessaire à la requète du client
+     */
+    $response = RouterService::handleRequest($_GET);
+
+/*-----CHARGEMENT DE LA REPONSE AU CLIENT-----*/
+    include "template/store/".$response["view"];

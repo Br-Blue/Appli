@@ -1,9 +1,8 @@
 <?php
-    namespace App\Entity;
     /**
      * Modèle représentant un produit dans l'application
      */
-    class Product // Fully Qualified Class Name (FQCN) : App\Entity\Product
+    class Product
     {
         private $id;
         private $name;
